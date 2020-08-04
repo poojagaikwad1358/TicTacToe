@@ -104,6 +104,7 @@ function checkWin()
 	elif [[ ${positions[1]} != 1 && ${positions[2]} != 2 && ${positions[3]} != 3 && ${positions[4]} != 4 && ${positions[5]} != 5 && ${positions[6]} != 6 && ${positions[7]} != 7 && ${positions[8]} != 8 && ${positions[9]} != 9 ]]
 	then
 		echo "The game is tie."
+		endGame=1;
    else
 		echo "Continue"
 	fi
@@ -118,9 +119,41 @@ function computerPlay()
 		choice=$(( $(( $RANDOM % ${#positions[@]} )) + 1))
 	done
 		echo "Computer choose $choice"
-		positions["$choice"]=$compSymbol
+		positions["$choice"]=$computerSymbol
 }
-resetBoard
-toss
-checkWin
-computerPlay
+
+#function for user turn
+function userPlay()
+{
+	read -p "Enter position you want to add $userSymbol: " choice1
+	while [ $(( ${positions["$choice1"]} )) -eq $(($computerSymbol)) -o $((${positions["$choice1"]})) -eq $(($userSymbol)) ]
+	do
+		echo "Place already taken choose another one"
+    	read -p "Enter position you want to add $userSymbol: " choice1
+	done
+	positions["$choice1"]=$userSymbol
+}
+
+#Function to playgame
+function play()
+{
+	resetBoard
+	toss
+   endGame=0
+
+	while [ $endGame -ne 1 ]
+   do
+   	board
+   	if [ $currentPlayer -eq 1 ]
+      then
+      	userPlay
+         checkWin
+         currentPlayer=0
+      else
+      	computerPlay
+         currentPlayer=1
+      fi
+	done
+}
+
+play
