@@ -108,6 +108,19 @@ function checkWin()
 		echo "Continue"
 	fi
 }
+
+#Function for computer turn
+function computerPlay()
+{
+	choice=$(( $(( $RANDOM % ${#positions[@]} )) ))
+	while [ $((${positions["$choice"]})) -eq $(($userSymbol)) -o $((${positions["$choice"]})) -eq $(($userSymbol)) ]
+	do
+		choice=$(( $(( $RANDOM % ${#positions[@]} )) + 1))
+	done
+		echo "Computer choose $choice"
+		positions["$choice"]=$compSymbol
+}
 resetBoard
 toss
 checkWin
+computerPlay
