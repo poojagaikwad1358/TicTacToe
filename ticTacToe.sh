@@ -11,6 +11,7 @@ function resetBoard()
 		positions[$i]=$i
 	done
 	echo "Board reset successful."
+	board
 }
 
 #function toss to check who win toss
@@ -20,6 +21,7 @@ function toss()
 	random=$(( RANDOM % 2 ))
 	if [ $random -eq 1 ]
 	then
+		currentPlayer=0
 		echo "Computer won toss."
 
 		symbol=$(( RANDOM % 2 ))
@@ -32,6 +34,7 @@ function toss()
 			userSymbol='X'
 		fi
 	else
+		currentPlayer=1
 		echo "You won toss."
 
 		read -p "Enter 1 for 'X' and 2 for 'O': " symbol
@@ -48,6 +51,17 @@ function toss()
 	echo "User: $userSymbol"
 }
 
+#Checking who win game
+function whoWon()
+{
+	if [ $currentPlayer -eq 0 ]
+	then
+		echo "Computer won."
+	else
+		echo "User won."
+	fi
+}
+
 #Printing board
 function board()
 {
@@ -60,6 +74,40 @@ function board()
 	printf "+---+---+---+\n"
 }
 
+#Function to check conditions vertical, diagonal, horizontal & tie for winner.
+function checkWin()
+{
+	if [[ ${positions[1]} == ${positions[2]} && ${positions[2]} == ${positions[3]} ]]
+	then
+		whoWon
+	elif [[ ${positions[4]} == ${positions[5]} && ${positions[5]} == ${positions[6]} ]]
+	then
+		whoWon
+	elif [[ ${positions[7]} == ${positions[8]} && ${positions[8]} == ${positions[9]} ]]
+	then
+		whoWon
+	elif [[ ${positions[1]} == ${positions[4]} && ${positions[4]} == ${positions[7]} ]]
+	then
+		whoWon
+	elif [[ ${positions[2]} == ${positions[5]} && ${positions[5]} == ${positions[8]} ]]
+	then
+		whoWon
+	elif [[ ${positions[3]} == ${positions[6]} && ${positions[6]} == ${positions[9]} ]]
+	then
+		whoWon
+	elif [[ ${positions[1]} == ${positions[5]} && ${positions[5]} == ${positions[9]} ]]
+	then
+		whoWon
+	elif [[ ${positions[7]} == ${positions[5]} && ${positions[5]} == ${positions[3]} ]]
+	then
+		whoWon
+	elif [[ ${positions[1]} != 1 && ${positions[2]} != 2 && ${positions[3]} != 3 && ${positions[4]} != 4 && ${positions[5]} != 5 && ${positions[6]} != 6 && ${positions[7]} != 7 && ${positions[8]} != 8 && ${positions[9]} != 9 ]]
+	then
+		echo "The game is tie."
+   else
+		echo "Continue"
+	fi
+}
 resetBoard
 toss
-board
+checkWin
