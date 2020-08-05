@@ -182,6 +182,11 @@ function computerPlay()
 
 	if [ $positionChange == 0 ]
 	then
+		getCenter
+	fi
+
+	if [ $positionChange == 0 ]
+	then
 		#choice=$(( $(( $RANDOM % ${#positions[@]} )) ))
 		while [ $((${positions["$choice"]})) -eq $(($userSymbol)) -o $((${positions["$choice"]})) -eq $(($userSymbol)) ]
 		do
@@ -270,6 +275,19 @@ function getCorner()
    		fi
 		fi
    done
+}
+
+#Function to get center
+function getCenter()
+{
+	if [[ ${positions[5]} == 5 ]]
+  	then
+   	checkWin
+      computerWinGame=0
+      positionChange=1
+      positions[5]=$computerSymbol
+      break
+   fi
 }
 
 play
