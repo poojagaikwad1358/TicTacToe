@@ -294,4 +294,26 @@ function getRandomPosition()
    board
 }
 
-play
+#Function for play game & game over
+function main()
+{
+	temp=0
+	while [[ $temp != 1 ]]
+	do
+		printf "\nEnter your choice:\n1.Play Game\n2.Game Over\n"
+		read -p "Choice: " choice
+		case $choice in
+			1)
+				play
+			;;
+			2)
+				flag=1
+				printf "\n Game Over!!!! \nThank you for playing!!!"
+				break
+			;;
+			*)
+				printf "\n Invalid choice."
+		esac
+	done
+}
+main
