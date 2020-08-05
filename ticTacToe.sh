@@ -307,7 +307,7 @@ function main()
 				play
 			;;
 			2)
-				flag=1
+				temp=1
 				printf "\n Game Over!!!! \nThank you for playing!!!"
 				break
 			;;
