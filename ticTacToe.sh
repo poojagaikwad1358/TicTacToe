@@ -3,14 +3,6 @@
 #declare dictionary array
 declare -a positions
 
-#variables
-endGame=0
-computerWinGame=0
-userWinGame=0
-positionChange=0
-i=1
-j=1
-
 #Function to reset board
 function resetBoard()
 {
@@ -20,6 +12,18 @@ function resetBoard()
 	done
 	echo "Board reset successful."
 	board
+}
+
+#Printing board
+function board()
+{
+   printf "+---+---+---+\n"
+   printf "| ${positions[1]} | ${positions[2]} | ${positions[3]} |\n"
+   printf "+---+---+---+\n"
+   printf "| ${positions[4]} | ${positions[5]} | ${positions[6]} |\n"
+   printf "+---+---+---+\n"
+   printf "| ${positions[7]} | ${positions[8]} | ${positions[9]} |\n"
+   printf "+---+---+---+\n"
 }
 
 #function toss to check who win toss
@@ -71,18 +75,6 @@ function whoWon()
 	endGame=1
 }
 
-#Printing board
-function board()
-{
-	printf "+---+---+---+\n"
-   printf "| ${positions[1]} | ${positions[2]} | ${positions[3]} |\n"
-	printf "+---+---+---+\n"
-   printf "| ${positions[4]} | ${positions[5]} | ${positions[6]} |\n"
-	printf "+---+---+---+\n"
-   printf "| ${positions[7]} | ${positions[8]} | ${positions[9]} |\n"
-	printf "+---+---+---+\n"
-}
-
 #Function to check conditions vertical, diagonal, horizontal & tie for winner.
 function checkWin()
 {
@@ -117,72 +109,89 @@ function checkWin()
 	fi
 }
 
-#Function for computer turn
-function computerPlay()
+#Function to playgame
+function play()
 {
-	checkComputerWin
+   resetBoard
+   toss
 
-	if [ $positionChange -eq 0 ]
-	then
-		checkUserWin
-	fi
+	endGame=0
+	computerWinGame=0
+	userWinGame=0
 
-	if [ $positionChange -eq 0 ]
-	then
-		choice=$(( $(( $RANDOM % ${#positions[@]} )) ))
-		while [ $((${positions["$choice"]})) -eq $(($userSymbol)) -o $((${positions["$choice"]})) -eq $(($userSymbol)) ]
-		do
-			choice=$(( $(( $RANDOM % ${#positions[@]} )) + 1))
-		done
-			echo "Computer choose $choice"
-			positions["$choice"]=$computerSymbol
-	fi
+   while [ $endGame -ne 1 ]
+   do
+      board
+      if [ $currentPlayer -eq 1 ]
+      then
+         userPlay
+         checkWin
+         currentPlayer=0
+      else
+         computerPlay
+         checkWin
+         currentPlayer=1
+      fi
+      if [[ $computerWinGame == 1 ]]
+      then
+         board
+         echo "Computer won"
+      elif [[ $userWinGame == 1 ]]
+      then
+         board
+         echo "User won"
+      fi
+   done
 }
 
 #function for user turn
 function userPlay()
 {
-	read -p "Enter position you want to add $userSymbol: " choice1
-	while [ $(( ${positions["$choice1"]} )) -eq $(($computerSymbol)) -o $(( ${positions["$choice1"]} )) -eq $(( $userSymbol )) ]
-	do
-		echo "Place already taken choose another one"
-    	read -p "Enter position you want to add $userSymbol: " choice1
-	done
-	positions["$choice1"]=$userSymbol
+   read -p "Enter position you want to add $userSymbol: " choice1
+   while [ $(( ${positions["$choice1"]} )) -eq $(($computerSymbol)) -o $(( ${positions["$choice1"]} )) -eq $(($userSymbol)) ]
+   do
+      echo "Place already taken choose another one"
+      read -p "Enter position you want to add $userSymbol: " choice1
+   done
+   positions["$choice1"]=$userSymbol
 }
 
-#Function to playgame
-function play()
+#Function for computer turn
+function computerPlay()
 {
-	resetBoard
-	toss
+	positionChange=0
+ 	checkComputerWin
 
-	while [ $endGame -ne 1 ]
-   do
-   	board
-   	if [ $currentPlayer -eq 1 ]
-      then
-      	userPlay
-         checkWin
-         currentPlayer=0
-      else
-      	computerPlay
-			checkWin
-         currentPlayer=1
-      fi
-		if [ $computerWinGame -eq 1 ]
-		then
-			echo "Computer won"
-		elif [ $userWinGame -eq 1 ]
-		then
-			echo "User won"
-		fi
-	done
+	if [[ $positionChange == 0 ]]
+	then
+		checkUserWin
+	fi
+
+	if [[ $positionChange == 0 ]]
+	then
+		getCorner
+	fi
+
+	if [ $positionChange == 0 ]
+	then
+		#choice=$(( $(( $RANDOM % ${#positions[@]} )) ))
+		while [ $((${positions["$choice"]})) -eq $(($userSymbol)) -o $((${positions["$choice"]})) -eq $(($userSymbol)) ]
+		do
+			choice=$(( $(( $RANDOM % ${#positions[@]} )) + 1 ))
+			break
+		done
+			echo "Computer choose $choice"
+			echo "Entered print"
+			positions["$choice"]=$computerSymbol
+			board
+	fi
 }
 
 #Function to block computer
 function checkComputerWin()
 {
+	i=1
+	j=1
 	while [ $i -le 9 -a $j -le 9 ]
    do
    	if [[ ${positions[$i]} == $i ]]
@@ -191,10 +200,10 @@ function checkComputerWin()
          checkWin
          if [[ $computerWinGame == 1 ]]
          then
-         	echo "Entered Computer"
+         	echo "Entered computer"
             positionChange=1
             computerWinGame=0
-            echo "Computer Chose: $i"
+            echo "Computer choose: $i"
             break
          else
             positions[$i]=$i
@@ -208,25 +217,50 @@ function checkComputerWin()
 #Function to block user
 function checkUserWin()
 {
+	i=1
+	j=1
 	while [ $i -le 9 -a $j -le 9 ]
    do
-   if [[ ${positions[$i]} == $i ]]
-   then
-   	positions[$i]=$userSymbol
-      checkWin
-      if [[ $userWinGame == 1 ]]
-      then
-      	echo "Entered user"
-         positionChange=1
-         userWinFlag=0
-         positions[$i]=$computerSymbol
-         break
+	   if [[ ${positions[$i]} == $i ]]
+   	then
+   		positions[$i]=$userSymbol
+      	checkWin
+      	if [[ $userWinGame == 1 ]]
+      	then
+      		echo "Entered user"
+         	positionChange=1
+         	computerWinGame=0
+				userWinGame=0
+         	positions[$i]=$computerSymbol
+	         break
 		else
-         positions[$i]=$i
+      	   positions[$i]=$i
       fi
    fi
    i=$(( i + 1 ))
    j=$(( j + 1 ))
+   done
+}
+
+#Function to get available corner
+function getCorner()
+{
+	for ((i=1; i<=9; i=$(( i + 2)) ))
+   do
+	   if [[ $i = 5 ]]
+   	then
+   		continue
+   	else
+			if [[ ${positions[$i]} == $i ]]
+   		then
+				echo $computerWinGame
+				checkWin
+				computerWinGame=0
+     			positionChange=1
+     			positions[$i]=$computerSymbol
+   	  		break
+   		fi
+		fi
    done
 }
 
