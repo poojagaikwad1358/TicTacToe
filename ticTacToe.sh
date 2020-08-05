@@ -187,20 +187,10 @@ function computerPlay()
 
 	if [ $positionChange == 0 ]
 	then
-		#choice=$(( $(( $RANDOM % ${#positions[@]} )) ))
-		while [ $((${positions["$choice"]})) -eq $(($userSymbol)) -o $((${positions["$choice"]})) -eq $(($userSymbol)) ]
-		do
-			choice=$(( $(( $RANDOM % ${#positions[@]} )) + 1 ))
-			break
-		done
-			echo "Computer choose $choice"
-			echo "Entered print"
-			positions["$choice"]=$computerSymbol
-			board
+		getRandomPosition
 	fi
 }
 
-#Function to block computer
 function checkComputerWin()
 {
 	i=1
@@ -227,7 +217,6 @@ function checkComputerWin()
 	done
 }
 
-#Function to block user
 function checkUserWin()
 {
 	i=1
@@ -288,6 +277,21 @@ function getCenter()
       positions[5]=$computerSymbol
       break
    fi
+}
+
+#Function to check for other position if nothing is available from corner & center
+function getRandomPosition()
+{
+	choice=$(( $(($RANDOM % ${#positions[@]})) ))
+   while [[ ${positions[$choice]} == $userSymbol && ${positions[$choice]} == $userSymbol ]]
+   do
+   	choice=$(($(($RANDOM % ${#positions[@]})) + 1))
+      break
+   done
+   echo "Computer choose $choice"
+   echo "Entered print"
+   positions[$choice]=$computerSymbol
+   board
 }
 
 play
