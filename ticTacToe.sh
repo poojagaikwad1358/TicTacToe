@@ -3,6 +3,14 @@
 #declare dictionary array
 declare -a positions
 
+#variables
+endGame=0
+computerWinGame=0
+userWinGame=0
+positionChange=0
+i=1
+j=1
+
 #Function to reset board
 function resetBoard()
 {
